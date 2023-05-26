@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDEA9103: Major Coding Project</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- tone.js link -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"
+        integrity="sha512-jduERlz7En1IUZR54bqzpNI64AbffZWR//KJgF71SJ8D8/liKFZ+s1RxmUmB+bhCnIfzebdZsULwOrbVB5f3nQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="utils.js"></script>
+    <script src="colliding-lines.js"></script>
+</head>
+
+<body>
+  <!--a master div holds everything and the canvas and button each have their own div within for managing layout
+  and responsiveness -->
+  <div id="masterDiv">
+
+    <div id="button-div1">
+      <button id="button1">
+        CLEAR RANDOM RECT
+      </button>
+    </div>
+  
+    <div id="canvasDiv">
+      <canvas id="cnv"></canvas>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+  <script src="tones.js"></script>
+
+</body>
+
+</html>
