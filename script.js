@@ -83,7 +83,7 @@ let mouseX, mouseY;
 
 // Initialise a random amount of lines on mouse click, randomly distributed on page
 function initialize() {
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < canvas.width/50; i++) {
         //start coordinates
         const x = Math.random() * canvas.width;
         const y = Math.random() * canvas.height;

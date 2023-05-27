@@ -1,4 +1,4 @@
-let lineFamilies = [{ familyID: 0, familyCount: 0 }];
+let lineFamilies = [];
 // Line class
 class Line {
     constructor(x, y, vx, vy, speed, colour, lineWidth, familyID, depth) {
@@ -7,9 +7,9 @@ class Line {
         this.vx = vx ?? random(-1, 1); // Random velocity for x-axis (-1 to 1)
         this.vy = vy ?? random(-1, 1); // Random velocity for y-axis (-1 to 1)
         this.speed = speed ?? 0.01;
-        this.depth = depth ?? 1;
+        this.depth = depth ?? 2;
         this.color = colour ?? getRandomColour();
-        this.lineWidth = lineWidth ?? random(1, 4); // Random line width (1 to 4)
+        this.lineWidth = lineWidth ?? random(2, 6); // Random line width (1 to 4)
         this.prevX = x; // Previous x position
         this.prevY = y; // Previous y position
         this.canvas = new OffscreenCanvas(cnvBbox.width, cnvBbox.height);
@@ -47,10 +47,10 @@ class Line {
         const dxMouse = mouseX - this.x;
         const dyMouse = mouseY - this.y;
         const distanceMouse = Math.sqrt(dxMouse ** 2 + dyMouse ** 2);
-        if (distanceMouse < 50) {
+        if (distanceMouse < 60) {
             const angleMouse = Math.atan2(dyMouse, dxMouse);
-            const targetXMouse = this.x + Math.cos(angleMouse) * 50;
-            const targetYMouse = this.y + Math.sin(angleMouse) * 50;
+            const targetXMouse = this.x + Math.cos(angleMouse) * 30;
+            const targetYMouse = this.y + Math.sin(angleMouse) * 30;
             const axMouse = (targetXMouse - mouseX) * 0.02;
             const ayMouse = (targetYMouse - mouseY) * 0.02;
             this.vx -= axMouse;
@@ -76,8 +76,9 @@ class Line {
             }
         });
 
-        if (this.xyArr.length > 1000) {
+        if (this.xyArr.length > canvas.height) {
             this.dead = true;
+            //console.log("a tone would be played");
         }
     }
 
@@ -104,13 +105,13 @@ class Line {
 
     createChild() {
         let familySize = checkFamilySize(lineFamilies, this.familyID);
-        if (familySize > 50) {
+        if (familySize > 30) {
             let vxChild = random(-1, 1) / (1 + this.speed);
             let vyChild = random(-1, 1) / (1 + this.speed);
             if (!this.dead) {
                 let xy = this.xyArr[Math.floor(Math.random() * this.xyArr.length)];
-                if ((Math.sqrt((xy.x - this.xy.x) ** 2 + (xy.y - this.xy.y) ** 2)) > 10) {
-                    let child = new Line(xy.x, xy.y, vxChild, vyChild, this.speed - this.speed, this.color, this.lineWidth * 0.9, this.familyID, this.depth - 3);
+                if ((Math.sqrt((xy.x - this.xy.x) ** 2 + (xy.y - this.xy.y) ** 2)) > 20) {
+                    let child = new Line(xy.x, xy.y, vxChild, vyChild, this.speed - this.speed, this.color, this.lineWidth * 1.25, this.familyID, this.depth - 3);
                     lines.push(child);
                 }
             }
@@ -126,7 +127,7 @@ class Line {
                     let xy = this.xyArr[Math.floor(Math.random() * this.xyArr.length)];
                     // conditional to stop generating children if the distance between the the generation point and recent collision is too small
                     if ((Math.sqrt((xy.x - this.xy.x) ** 2 + (xy.y - this.xy.y) ** 2)) > 10) {
-                        let child = new Line(xy.x, xy.y, vxChild, vyChild, this.speed + this.speed, this.color, this.lineWidth * 0.9, this.familyID, this.depth + 1);
+                        let child = new Line(xy.x, xy.y, vxChild, vyChild, this.speed + this.speed, this.color, this.lineWidth * 0.75, this.familyID, this.depth + 1);
                         lines.push(child);
                     }
                 }
@@ -146,6 +147,13 @@ class Line {
         } else {
             this.xyArr = [];
             this.deathComplete = true;
+            reduceArr(lineFamilies, this.familyID);
+
+                let familySize = checkFamilySize(lineFamilies, this.familyID);
+                if (familySize < 1) {
+                    console.log("a sound could be played")
+                }
+
         }
     }
 

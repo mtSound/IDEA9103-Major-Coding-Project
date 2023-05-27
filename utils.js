@@ -27,7 +27,7 @@ function checkArr(array, key) {
         if (array[i].familyID === key) {
             array[i].familyCount += 1;
             found = true;
-        } 
+        }
     }
 
     if (!found) {
@@ -36,7 +36,14 @@ function checkArr(array, key) {
             familyCount: 1
         }
         array.push(newFamily);
-        //return newFamily;
+    }
+}
+
+function reduceArr(array, key) {
+    for (let i = 0; i < array.length; i++) {
+        if (array[i].familyID === key) {
+            array[i].familyCount -= 1;
+        }
     }
 }
 
@@ -45,13 +52,8 @@ function checkFamilySize(array, key) {
         if (array[i].familyID === key) {
             return array[i].familyCount;
         }
-        // } else {
-        //     return false;
-        // }
     }
 }
-
-//familyObject['familyCount']++;
 
 //OVERLOADED RANDOM FUNCTION
 //random will return a value between 0 and 1 (not including 1)
