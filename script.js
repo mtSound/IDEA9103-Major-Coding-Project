@@ -27,7 +27,7 @@ const button1 = document.getElementById("button1");
 /*assigns button 1 the function of clearing randomly defined rectangular areas of the canvas using the
 clearRandomQuadrant() function*/
 button1.addEventListener("click", () => {
-  clearRandomQuadrant();
+    clearRandomQuadrant();
 })
 
 
@@ -83,33 +83,42 @@ let mouseX, mouseY;
 
 // Initialise a random amount of lines on mouse click, randomly distributed on page
 function initialize() {
-  for (let i = 0; i < 20; i++) {
-    //start coordinates
-    const x = Math.random() * canvas.width;
-    const y = Math.random() * canvas.height;
-    //color = "lightgreen";
-    lines.push(new Line(x, y));
-  }
+    for (let i = 0; i < 200; i++) {
+        //start coordinates
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        //color = "lightgreen";
+        lines.push(new Line(x, y));
+    }
 }
 
 
 // Update function
 function update() {
-  // Hue rotate filter
-  ctx.filter = `hue-rotate(${hueRotate}deg) blur(1px)`
-  // adds a full page canvas rect with dull red at very low opacity that adds that tint and is what allows 
-  // the trails to build up by drawing over every update
-  ctx.fillStyle = 'rgba(50, 20, 20, .01)';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  lines.forEach((line) => {
-    if (!line.collision) {
-      line.update();
-      line.draw();
-    }
-  });
-  // enbales shift of hue for multicolour effects
-  hueRotate++;
-  requestAnimationFrame(update);
+    // Hue rotate filter
+    //ctx.filter = `hue-rotate(${hueRotate}deg) blur(1px)`
+    // adds a full page canvas rect with dull red at very low opacity that adds that tint and is what allows 
+    // the trails to build up by drawing over every update
+    ctx.fillStyle = 'rgba(50, 20, 20, .05)';
+    //ctx.fillStyle = '#2a9d8f50'
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    lines.forEach((line, index) => {
+        if (!line.dead) {
+            if (!line.collision) {
+                line.update();
+                line.draw();
+            }
+        } else {
+            line.unUpdate();
+            line.unDraw();
+            if (line.deathComplete){
+                lines.splice(index, 1);
+            }
+        }
+    });
+    // enbales shift of hue for multicolour effects
+    //hueRotate++;
+    requestAnimationFrame(update);
 }
 
 
