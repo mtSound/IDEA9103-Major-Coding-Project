@@ -104,7 +104,7 @@ class Line {
 
     createChild() {
         let familySize = checkFamilySize(lineFamilies, this.familyID);
-        if (familySize > 30) {
+        if (familySize > 50) {
             let vxChild = random(-1, 1) / (1 + this.speed);
             let vyChild = random(-1, 1) / (1 + this.speed);
             if (!this.dead) {
