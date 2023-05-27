@@ -1,4 +1,4 @@
-let lineFamilies = [{ familyID: 0, familyCount: 11 }];
+//let lineFamilies = [{ familyID: 0, familyCount: 11 }];
 // Line class
 class Line {
     constructor(x, y, vx, vy, speed, colour, lineWidth, familyID, depth) {
