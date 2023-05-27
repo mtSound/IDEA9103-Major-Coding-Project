@@ -1,4 +1,4 @@
-//let lineFamilies = [{ familyID: 0, familyCount: 11 }];
+let lineFamilies = [{ familyID: 0, familyCount: 0 }];
 // Line class
 class Line {
     constructor(x, y, vx, vy, speed, colour, lineWidth, familyID, depth) {
@@ -6,8 +6,8 @@ class Line {
         this.y = y;
         this.vx = vx ?? random(-1, 1); // Random velocity for x-axis (-1 to 1)
         this.vy = vy ?? random(-1, 1); // Random velocity for y-axis (-1 to 1)
-        this.speed = speed ?? 0.001;
-        this.depth = depth ?? 0;
+        this.speed = speed ?? 0.01;
+        this.depth = depth ?? 1;
         this.color = colour ?? getRandomColour();
         this.lineWidth = lineWidth ?? random(1, 4); // Random line width (1 to 4)
         this.prevX = x; // Previous x position
@@ -23,9 +23,9 @@ class Line {
         this.prevDeadX;
         this.prevDeadY;
 
-        // //check the familyID
-        // let key = this.familyID;
-        // checkArr(lineFamilies, key);
+        //check the familyID
+        let key = this.familyID;
+        checkArr(lineFamilies, key);
     }
 
     update() {
@@ -76,7 +76,7 @@ class Line {
             }
         });
 
-        if (this.xyArr.length > 500) {
+        if (this.xyArr.length > 1000) {
             this.dead = true;
         }
     }
@@ -103,20 +103,20 @@ class Line {
     }
 
     createChild() {
-        // let familySize = checkFamilySize(lineFamilies, this.familyID);
-        // if (familySize > 50) {
-        //     let vxChild = random(-1, 1) / (1 + this.speed);
-        //     let vyChild = random(-1, 1) / (1 + this.speed);
-        //     if (!this.dead) {
-        //         let xy = this.xyArr[Math.floor(Math.random() * this.xyArr.length)];
-        //         if ((Math.sqrt((xy.x - this.xy.x) ** 2 + (xy.y - this.xy.y) ** 2)) > 10) {
-        //             let child = new Line(xy.x, xy.y, vxChild, vyChild, this.speed - this.speed, this.color, this.lineWidth * 0.9, this.familyID, this.depth - 3);
-        //             lines.push(child);
-        //         }
-        //     }
-        // } else {
+        let familySize = checkFamilySize(lineFamilies, this.familyID);
+        if (familySize > 30) {
+            let vxChild = random(-1, 1) / (1 + this.speed);
+            let vyChild = random(-1, 1) / (1 + this.speed);
+            if (!this.dead) {
+                let xy = this.xyArr[Math.floor(Math.random() * this.xyArr.length)];
+                if ((Math.sqrt((xy.x - this.xy.x) ** 2 + (xy.y - this.xy.y) ** 2)) > 10) {
+                    let child = new Line(xy.x, xy.y, vxChild, vyChild, this.speed - this.speed, this.color, this.lineWidth * 0.9, this.familyID, this.depth - 3);
+                    lines.push(child);
+                }
+            }
+        } else {
             // create a random number of children, scaled to depth
-            let children = Math.round(random(0, 2));// + this.depth;
+            let children = Math.round(random(0, this.depth));
             // children all spawn in the same direction
             let vxChild = random(-1, 1) * (1 + this.speed);
             let vyChild = random(-1, 1) * (1 + this.speed);
@@ -131,7 +131,7 @@ class Line {
                     }
                 }
             }
-        //}
+        }
     }
 
     unUpdate() {
