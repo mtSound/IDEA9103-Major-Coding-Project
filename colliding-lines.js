@@ -12,8 +12,6 @@ class Line {
         this.lineWidth = lineWidth ?? random(0.5, 4); // Random line width (1 to 4)
         this.prevX = x; // Previous x position
         this.prevY = y; // Previous y position
-        // this.canvas = new OffscreenCanvas(canvas.width, canvas.height);
-        // this.ctx = this.canvas.getContext('2d');
         this.canvas = offscreen;
         this.ctx = layer;
         this.xyArr = []; // initialise an empty xyArr to store the line coordinates every time it calls the update method
