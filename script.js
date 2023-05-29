@@ -115,13 +115,14 @@ document.addEventListener('click', initOrSeed);
 
 let numOfLines = canvas.width/32;// number of lines to start with - scaled to canvas
 
-let lineColour = "white"; //getRandomColour();
-
 let childScaling = 0.0001;//scaling for the speed of children (be gentle)
 
-let populationMax = 30;// the limit at which scaling back occurs
+let populationMax = 20;// the limit at which scaling back occurs
 
 let userStrength = 60;// how strongly the mouse interacts with lines
+
+let linesAvoid = true;
+
 
 // Initialise a random amount of lines on mouse click, randomly distributed on page
 function initialize() {

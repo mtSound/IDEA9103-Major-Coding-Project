@@ -8,8 +8,8 @@ class Line {
         this.vy = vy ?? random(-1, 1); // Random velocity for y-axis (-1 to 1)
         this.speed = speed ?? childScaling;
         this.depth = depth ?? 3;
-        this.color = colour ?? lineColour;
-        this.lineWidth = lineWidth ?? random(0.5, 4); // Random line width (1 to 4)
+        this.color = colour ?? getRandomColour();
+        this.lineWidth = lineWidth ?? random(0.5, 3); // Random line width (1 to 4)
         this.prevX = x; // Previous x position
         this.prevY = y; // Previous y position
         this.canvas = offscreen;
@@ -71,17 +71,19 @@ class Line {
         // Check for collision with other lines & stop
         lines.forEach((line) => {
             if (line.familyID !== this.familyID) {
-                let dxLines = line.x - this.x;
-                let dyLines = line.y - this.y;
-                let distanceLines = Math.sqrt(dxLines ** 2 + dyLines ** 2);
-                if (distanceLines < populationMax / 2) {
-                    let angleLines = Math.atan2(dyLines, dxLines);
-                    let targetXLine = this.x + Math.cos(angleLines) * (populationMax / 8);
-                    let targetYLine = this.y + Math.sin(angleLines) * (populationMax / 8);
-                    let axLines = (targetXLine - line.x) * 0.02;
-                    let ayLines = (targetYLine - line.y) * 0.02;
-                    this.vx -= axLines;
-                    this.vy -= ayLines;
+                if (linesAvoid) {
+                    let dxLines = line.x - this.x;
+                    let dyLines = line.y - this.y;
+                    let distanceLines = Math.sqrt(dxLines ** 2 + dyLines ** 2);
+                    if (distanceLines < populationMax) {
+                        let angleLines = Math.atan2(dyLines, dxLines);
+                        let targetXLine = this.x + Math.cos(angleLines) * (populationMax / 8);
+                        let targetYLine = this.y + Math.sin(angleLines) * (populationMax / 8);
+                        let axLines = (targetXLine - line.x) * 0.02;
+                        let ayLines = (targetYLine - line.y) * 0.02;
+                        this.vx -= axLines;
+                        this.vy -= ayLines;
+                    }
                 }
                 if (arrContainsObject(this.xy, line.xyArr)) {
                     this.collision = true;
@@ -92,7 +94,7 @@ class Line {
             }
         });
 
-        if (this.xyArr.length > ((2 * canvas.width) * (1 / this.lineWidth))) {
+        if (this.xyArr.length > ((this.depth * canvas.width) * (1 / this.lineWidth))) {
             this.dead = true;
             //console.log("a tone would be played");
         }
@@ -115,23 +117,24 @@ class Line {
     createChild() {
         let familySize = checkFamilySize(lineFamilies, this.familyID);
         if (this.depth === 3) { //if it's the first gen
-            // create a random number of children, scaled to depth
             let children = random(0, 2);
             // children all spawn in the same direction
+            let vxChild = random(-1, 1) + (1 + this.speed);
+            let vyChild = random(-1, 1) + (1 + this.speed);
             if (!this.dead) {
                 for (let i = 0; i < children; i++) {
                     // pick a random point along the parent line to spawn child from
                     let xy = this.xyArr[Math.floor(Math.random() * this.xyArr.length)];
-                    let vxChild = random(-1, 1) + (1 + this.speed);
-                    let vyChild = random(-1, 1) + (1 + this.speed);
                     // conditional to stop generating children if the distance between the the generation point and recent collision is too small
-                    if ((Math.sqrt((xy.x - this.xy.x) ** 2 + (xy.y - this.xy.y) ** 2)) > 10) {
+                    if ((Math.sqrt((xy.x - this.xy.x) ** 2 + (xy.y - this.xy.y) ** 2)) > 20) {
                         let child = new Line(xy.x, xy.y, vxChild, vyChild, this.speed + this.speed, this.color, this.lineWidth * 0.75, this.familyID, this.depth + 1);
                         lines.push(child);
                     }
                 }
             }
         } else if (familySize > populationMax) { // if the population has been exceeded
+                        // children all spawn in the same direction
+
             let vxChild = random(-1, 1) / (1 + this.speed);
             let vyChild = random(-1, 1) / (1 + this.speed);
             let children = random(0, 1);
@@ -145,15 +148,15 @@ class Line {
                 }
             }
         } else {
-            // create a random number of children, scaled to depth
             let children = this.depth;
             // children all spawn in the same direction
+            let vxChild = random(-1, 1) * (1 + this.speed);
+            let vyChild = random(-1, 1) * (1 + this.speed);
             if (!this.dead) {
                 for (let i = 0; i < children; i++) {
                     // pick a random point along the parent line to spawn child from
                     let xy = this.xyArr[Math.floor(Math.random() * this.xyArr.length)];
-                    let vxChild = random(-1, 1) * (1 + this.speed);
-                    let vyChild = random(-1, 1) * (1 + this.speed);
+
                     // conditional to stop generating children if the distance between the the generation point and recent collision is too small
                     if ((Math.sqrt((xy.x - this.xy.x) ** 2 + (xy.y - this.xy.y) ** 2)) > 10) {
                         let child = new Line(xy.x, xy.y, vxChild, vyChild, this.speed + this.speed, this.color, this.lineWidth * 0.75, this.familyID, this.depth + 1);
