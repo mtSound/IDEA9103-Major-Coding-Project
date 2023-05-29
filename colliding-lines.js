@@ -170,3 +170,5 @@ class Line {
         ctx.drawImage(this.canvas, 0, 0);
     }
 }
+
+// test
