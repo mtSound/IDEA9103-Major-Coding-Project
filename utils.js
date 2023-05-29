@@ -6,7 +6,7 @@ const resolution = 3;
 function arrContainsObject(obj, arr) {
     for (let i = 0; i < arr.length; i++) {
         if ((arr[i].x >= (obj.x - resolution) && arr[i].x <= (obj.x + resolution)) && (arr[i].y >= (obj.y - resolution) && arr[i].y <= (obj.y + resolution))) {
-            collisionArray.push({ x: arr[i].x, y: arr[i].y });
+            //collisionArray.push({ x: arr[i].x, y: arr[i].y });
             // //once the array has multiple entries, draws a line from the first collision point to the most recent
             // if(collisionArray.length>=2){
             //   x1 = collisionArray[0].x;
@@ -55,6 +55,16 @@ function checkFamilySize(array, key) {
     }
 }
 
+function removeFamily(array, key) {
+    for (let i = 0; i < array.length; i++) {
+        if (array[i].familyID === key) {
+            if (array[i].familyCount === 0) {
+                array.splice([i], 1);
+            }
+        }
+    }
+}
+
 //OVERLOADED RANDOM FUNCTION
 //random will return a value between 0 and 1 (not including 1)
 //random (upper) will return a value between 0 and upper (not including upper)
@@ -84,11 +94,26 @@ function random() {
 // RANDOM COLOUR FUNCTION
 function getRandomColour() {
     const letters = "0123456789ABCDEF";
-    let color = "#";
-    for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
+    switch (arguments.length) {
+        case 0:
+            let color = "#";
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            //color += "10"
+            return color;
+        case 1: //add transparency
+            if (typeof arguments[0] == 'number') {
+                let color = "#";
+                for (let i = 0; i < 6; i++) {
+                    color += letters[Math.floor(Math.random() * 16)];
+
+                }
+                color += `${arguments[0]}`;
+                //console.log(arguments[0])
+                return color;
+            }
     }
-    return color;
 }
 
 //LINE DRAWING FUNCTION
@@ -132,5 +157,13 @@ function rectClearArraySweep() {
 // MOUSE MOVEMENT FUNCTION
 function handleMouseMove(event) {
     mouseX = event.clientX;
-    mouseY = event.clientY - btnBbox.height;
+    mouseY = event.clientY;
+}
+
+function initOrSeed() {
+    if (firstClick) {
+        initialize();
+    } else {
+        seed(event);
+    }
 }

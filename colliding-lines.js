@@ -6,14 +6,16 @@ class Line {
         this.y = y;
         this.vx = vx ?? random(-1, 1); // Random velocity for x-axis (-1 to 1)
         this.vy = vy ?? random(-1, 1); // Random velocity for y-axis (-1 to 1)
-        this.speed = speed ?? 0.01;
-        this.depth = depth ?? 2;
-        this.color = colour ?? getRandomColour();
-        this.lineWidth = lineWidth ?? random(2, 6); // Random line width (1 to 4)
+        this.speed = speed ?? childScaling;
+        this.depth = depth ?? 3;
+        this.color = colour ?? lineColour;
+        this.lineWidth = lineWidth ?? random(0.5, 4); // Random line width (1 to 4)
         this.prevX = x; // Previous x position
         this.prevY = y; // Previous y position
-        this.canvas = new OffscreenCanvas(cnvBbox.width, cnvBbox.height);
-        this.ctx = this.canvas.getContext('2d');
+        // this.canvas = new OffscreenCanvas(canvas.width, canvas.height);
+        // this.ctx = this.canvas.getContext('2d');
+        this.canvas = offscreen;
+        this.ctx = layer;
         this.xyArr = []; // initialise an empty xyArr to store the line coordinates every time it calls the update method
         this.familyID = familyID ?? random(); // set a 'family ID' so lines from the same lineage can't collide with each other
         this.dead = false;
@@ -23,12 +25,12 @@ class Line {
         this.prevDeadX;
         this.prevDeadY;
 
-        //check the familyID
-        let key = this.familyID;
-        checkArr(lineFamilies, key);
+        //check the familyID - if it exists, add to the familyCount. Otherwise, create a new family
+        checkArr(lineFamilies, this.familyID);
     }
 
     update() {
+
         this.prevX = this.x;
         this.prevY = this.y;
         this.x += this.vx;
@@ -44,17 +46,21 @@ class Line {
 
 
         // Check for interaction with mouse position
-        const dxMouse = mouseX - this.x;
-        const dyMouse = mouseY - this.y;
-        const distanceMouse = Math.sqrt(dxMouse ** 2 + dyMouse ** 2);
-        if (distanceMouse < 60) {
-            const angleMouse = Math.atan2(dyMouse, dxMouse);
-            const targetXMouse = this.x + Math.cos(angleMouse) * 30;
-            const targetYMouse = this.y + Math.sin(angleMouse) * 30;
-            const axMouse = (targetXMouse - mouseX) * 0.02;
-            const ayMouse = (targetYMouse - mouseY) * 0.02;
-            this.vx -= axMouse;
-            this.vy -= ayMouse;
+        let dxMouse = mouseX - this.x;
+        let dyMouse = mouseY - this.y;
+        let distanceMouse = Math.sqrt(dxMouse ** 2 + dyMouse ** 2);
+        if (mouseY > 5 && mouseY < canvas.height - 5) {
+            if (mouseX > 5 && mouseX < canvas.width - 5) {
+                if (distanceMouse < userStrength) {
+                    let angleMouse = Math.atan2(dyMouse, dxMouse);
+                    let targetXMouse = this.x + Math.cos(angleMouse) * (userStrength / 2);
+                    let targetYMouse = this.y + Math.sin(angleMouse) * (userStrength / 2);
+                    let axMouse = (targetXMouse - mouseX) * 0.02;
+                    let ayMouse = (targetYMouse - mouseY) * 0.02;
+                    this.vx -= axMouse;
+                    this.vy -= ayMouse;
+                }
+            }
         }
 
 
@@ -67,6 +73,18 @@ class Line {
         // Check for collision with other lines & stop
         lines.forEach((line) => {
             if (line.familyID !== this.familyID) {
+                let dxLines = line.x - this.x;
+                let dyLines = line.y - this.y;
+                let distanceLines = Math.sqrt(dxLines ** 2 + dyLines ** 2);
+                if (distanceLines < populationMax / 2) {
+                    let angleLines = Math.atan2(dyLines, dxLines);
+                    let targetXLine = this.x + Math.cos(angleLines) * (populationMax / 8);
+                    let targetYLine = this.y + Math.sin(angleLines) * (populationMax / 8);
+                    let axLines = (targetXLine - line.x) * 0.02;
+                    let ayLines = (targetYLine - line.y) * 0.02;
+                    this.vx -= axLines;
+                    this.vy -= ayLines;
+                }
                 if (arrContainsObject(this.xy, line.xyArr)) {
                     this.collision = true;
                     this.collisionxy = this.xy;
@@ -76,22 +94,13 @@ class Line {
             }
         });
 
-        if (this.xyArr.length > canvas.height) {
+        if (this.xyArr.length > ((2 * canvas.width) * (1 / this.lineWidth))) {
             this.dead = true;
             //console.log("a tone would be played");
         }
     }
 
     draw() {
-        // // draw on the main canvas
-        // ctx.beginPath();
-        // ctx.lineCap = "round";
-        // ctx.moveTo(this.prevX, this.prevY);
-        // ctx.lineTo(this.x, this.y);
-        // ctx.strokeStyle = this.color;
-        // ctx.lineWidth = this.lineWidth;
-        // ctx.stroke();
-
         // draw on the offscreen canvas
         this.ctx.beginPath();
         this.ctx.lineCap = "round";
@@ -101,30 +110,52 @@ class Line {
         this.ctx.lineWidth = this.lineWidth;
         this.ctx.stroke();
         ctx.drawImage(this.canvas, 0, 0);
+
+
     }
 
     createChild() {
         let familySize = checkFamilySize(lineFamilies, this.familyID);
-        if (familySize > 30) {
-            let vxChild = random(-1, 1) / (1 + this.speed);
-            let vyChild = random(-1, 1) / (1 + this.speed);
-            if (!this.dead) {
-                let xy = this.xyArr[Math.floor(Math.random() * this.xyArr.length)];
-                if ((Math.sqrt((xy.x - this.xy.x) ** 2 + (xy.y - this.xy.y) ** 2)) > 20) {
-                    let child = new Line(xy.x, xy.y, vxChild, vyChild, this.speed - this.speed, this.color, this.lineWidth * 1.25, this.familyID, this.depth - 3);
-                    lines.push(child);
-                }
-            }
-        } else {
+        if (this.depth === 3) { //if it's the first gen
             // create a random number of children, scaled to depth
-            let children = Math.round(random(0, this.depth));
+            let children = random(0, 2);
             // children all spawn in the same direction
-            let vxChild = random(-1, 1) * (1 + this.speed);
-            let vyChild = random(-1, 1) * (1 + this.speed);
             if (!this.dead) {
                 for (let i = 0; i < children; i++) {
                     // pick a random point along the parent line to spawn child from
                     let xy = this.xyArr[Math.floor(Math.random() * this.xyArr.length)];
+                    let vxChild = random(-1, 1) + (1 + this.speed);
+                    let vyChild = random(-1, 1) + (1 + this.speed);
+                    // conditional to stop generating children if the distance between the the generation point and recent collision is too small
+                    if ((Math.sqrt((xy.x - this.xy.x) ** 2 + (xy.y - this.xy.y) ** 2)) > 10) {
+                        let child = new Line(xy.x, xy.y, vxChild, vyChild, this.speed + this.speed, this.color, this.lineWidth * 0.75, this.familyID, this.depth + 1);
+                        lines.push(child);
+                    }
+                }
+            }
+        } else if (familySize > populationMax) { // if the population has been exceeded
+            let vxChild = random(-1, 1) / (1 + this.speed);
+            let vyChild = random(-1, 1) / (1 + this.speed);
+            let children = random(0, 1);
+            if (!this.dead) {
+                for (let i = 0; i < children; i++) {
+                    let xy = this.xyArr[Math.floor(Math.random() * this.xyArr.length)];
+                    if ((Math.sqrt((xy.x - this.xy.x) ** 2 + (xy.y - this.xy.y) ** 2)) > 20) {
+                        let child = new Line(xy.x, xy.y, vxChild, vyChild, this.speed / 4, this.color, this.lineWidth, this.familyID, this.depth - 4);
+                        lines.push(child);
+                    }
+                }
+            }
+        } else {
+            // create a random number of children, scaled to depth
+            let children = this.depth;
+            // children all spawn in the same direction
+            if (!this.dead) {
+                for (let i = 0; i < children; i++) {
+                    // pick a random point along the parent line to spawn child from
+                    let xy = this.xyArr[Math.floor(Math.random() * this.xyArr.length)];
+                    let vxChild = random(-1, 1) * (1 + this.speed);
+                    let vyChild = random(-1, 1) * (1 + this.speed);
                     // conditional to stop generating children if the distance between the the generation point and recent collision is too small
                     if ((Math.sqrt((xy.x - this.xy.x) ** 2 + (xy.y - this.xy.y) ** 2)) > 10) {
                         let child = new Line(xy.x, xy.y, vxChild, vyChild, this.speed + this.speed, this.color, this.lineWidth * 0.75, this.familyID, this.depth + 1);
@@ -149,30 +180,23 @@ class Line {
             this.deathComplete = true;
             reduceArr(lineFamilies, this.familyID);
 
-                let familySize = checkFamilySize(lineFamilies, this.familyID);
-                if (familySize < 1) {
-                    console.log("a sound could be played")
-                }
+            let familySize = checkFamilySize(lineFamilies, this.familyID);
+            if (familySize < 1) {
+                console.log("a sound could be played");
+                removeFamily(lineFamilies, this.familyID)
+
+            }
 
         }
     }
 
     unDraw() {
-        // // // draw on the main canvas
-        // ctx.beginPath();
-        // ctx.lineCap = "round";
-        // ctx.moveTo(this.prevDeadX, this.prevDeadY);
-        // ctx.lineTo(this.deadX, this.deadY);
-        // ctx.strokeStyle = '#00000080';
-        // ctx.lineWidth = this.lineWidth;
-        // ctx.stroke();
-
         // draw on the offscreen canvas
         this.ctx.beginPath();
         this.ctx.lineCap = "round";
         this.ctx.moveTo(this.prevDeadX, this.prevDeadY);
         this.ctx.lineTo(this.deadX, this.deadY);
-        this.ctx.strokeStyle = '#00000060';
+        this.ctx.strokeStyle = '#00000080';
         this.ctx.lineWidth = this.lineWidth * 1.5;
         this.ctx.stroke();
         ctx.drawImage(this.canvas, 0, 0);
