@@ -170,3 +170,11 @@ class Line {
         ctx.drawImage(this.canvas, 0, 0);
     }
 }
+
+function checkCollision(ball, line) {
+    const dx = ball.x - line.x;
+    const dy = ball.y - line.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+  
+    return distance < ball.radius + line.width / 2;
+  }

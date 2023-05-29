@@ -2,6 +2,28 @@
 /// PAGE SETUP
 //////////////////////////////////////////////////////////////////
 
+//////////////////////////////////////////////////////////////////
+/// ColorPattern set up
+var colorPattern = [
+    "#002db3",
+    "#4d79ff",
+    "#00076f",
+    "#44008b",
+    "#9f45b0",
+    "#e54ed0",
+    "#ffe4f2"
+
+]
+var galaxyColor = [
+    "#2B506F",
+    "#182937",
+    "#B1BED2",
+    "#4C7097",
+    "#7591BB",
+]
+//////////////////////////////////////////////////////////////////
+
+
 ////////////////////
 // MASTER DIV SETUP
 // Get master div element and dimensions
@@ -55,6 +77,9 @@ canvas.height = cnvBbox.height;
 // Create an array to hold the lines
 let lines = [];
 
+// create an array for balls
+const balls = [];
+
 // logs (x,y) coordinates for collision instances
 // currently not being accessed by anything, but could be used for something interesting
 let collisionArray = [];
@@ -65,6 +90,10 @@ let hueRotate = 0;
 // Initialize mouse position variables
 let mouseX, mouseY;
 
+// Set the initial size, number and angle of new lines
+const initialSize = 60;
+const numRectangles = 8;
+let angle = 0;
 
 
 
@@ -81,9 +110,35 @@ let mouseX, mouseY;
 //   }
 // }
 
+// function to create balls 
+function createBall(x, y) {
+    const ball = {x, y,
+      radius: 20,
+      speedX: Math.random() * 4 - 1,
+      speedY: Math.random() * 4 - 1,
+    };
+    balls.push(ball);
+  }
+
+
+// function to create lines      
+function createLine(x, y) {
+  const lines = {
+    x,
+    y,
+    length: Math.random() * 100 + 50,
+    stretch: 1,
+    speed: Math.random() * 0.2 + 0.01,
+  };
+
+  lines.push(lines);
+}
+
 // Initialise a random amount of lines on mouse click, randomly distributed on page
 function initialize() {
-    for (let i = 0; i < 500; i++) {
+        // I change the max amount from 500 to 10, otherwise the page would overload :) - Amy
+
+    for (let i = 0; i < 10; i++) {
         //start coordinates
         const x = Math.random() * canvas.width;
         const y = Math.random() * canvas.height;
@@ -121,16 +176,118 @@ function update() {
     requestAnimationFrame(update);
 }
 
-
-
-
-// Event listeners
-window.addEventListener("mousemove", handleMouseMove);
-// event listener for clicking anywhere on the page
-document.addEventListener('click', initialize);
-
 // Initialize and start the animation
 update();
 
 
+// I moved this function of event listeners to a new group - Amy
 
+// // Event listeners
+// window.addEventListener("mousemove", handleMouseMove);
+// // event listener for clicking anywhere on the page
+// document.addEventListener('click', initialize);
+
+
+
+// click to generate a new ball and lines
+canvas.addEventListener('click', function(event) {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+  
+    createBall(mouseX, mouseY);
+    initialize();
+  });
+
+
+  function draw() {
+    // ctx.clearRect(0, 0, 600, 600);
+  
+    const spacing = 100;
+    const maxDistance = 600;
+    const gradientStops = ['blue', 'indigo', 'violet']; 
+  
+    for (let i = 0; i < numRectangles; i++) {
+      const currentAngle = angle + (i * (2 * Math.PI / numRectangles));
+      const distance = (maxDistance / numRectangles) * i;
+  
+      const x = canvas.width / 2 + Math.cos(currentAngle) * distance;
+      const y = canvas.height / 2 + Math.sin(currentAngle) * distance;
+      const size = initialSize - (i * (initialSize / numRectangles));
+  
+      const gradient = ctx.createLinearGradient(x, y, x + size, y + size);
+      gradientStops.forEach((color, index) => {
+        gradient.addColorStop(index / (gradientStops.length - 1), color);
+      });
+  
+      ctx.fillStyle = gradient;
+      ctx.fillRect(x, y, size, size);
+    }
+  
+      balls.forEach(ball => {
+      ball.x += ball.speedX;
+      ball.y += ball.speedY;
+  
+      if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) {
+        ball.speedX = -ball.speedX;
+      }
+      if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+        ball.speedY = -ball.speedY;
+      }
+  
+      // Collision detection (balls & rect)
+      for (let i = 0; i < numRectangles; i++) {
+      const currentAngle = angle + (i * (2 * Math.PI / numRectangles));
+      const distance = (maxDistance / numRectangles) * i;
+  
+      const rectX = canvas.width / 2 + Math.cos(currentAngle) * distance;
+      const rectY = canvas.height / 2 + Math.sin(currentAngle) * distance;
+      const rectSize = initialSize - (i * (initialSize / numRectangles));
+  
+      const rect = { x: rectX, y: rectY, width: rectSize, height: rectSize };
+  
+      if (checkCollision(ball, rect)) {
+        ball.speedX = -ball.speedX;
+        ball.speedY = -ball.speedY;
+      }
+    }
+
+  
+      ctx.fillStyle = colorPattern;
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    //  To generate 
+    lines.forEach(line => {
+      line.stretch += line.speed;
+  
+      if (line.stretch > 1 || line.stretch < 0) {
+        line.speed = -line.speed;
+      }
+  
+      const startX = line.x;
+      const startY = line.y;
+      const endX = startX + (Math.random() * 200 - 100);
+      const endY = startY + (Math.random() * 200 - 100);
+      const lineLength = line.length;
+  
+      const lineGradient = ctx.createLinearGradient(startX, startY, endX, endY);
+      lineGradient.addColorStop(0, 'yellow');
+      lineGradient.addColorStop(0.5, 'red');
+      lineGradient.addColorStop(1, 'blue');
+  
+      ctx.strokeStyle = lineGradient;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(startX + (endX - startX) * line.stretch, startY + (endY - startY) * line.stretch);
+      ctx.stroke();
+    });
+    angle += 0.02;
+  
+    requestAnimationFrame(draw);
+  }
+  
+  
+  draw();
