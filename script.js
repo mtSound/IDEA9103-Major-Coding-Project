@@ -2,33 +2,33 @@
 /// PAGE SETUP
 //////////////////////////////////////////////////////////////////
 
-////////////////////
-// MASTER DIV SETUP
-// Get master div element and dimensions
-const masterDiv = document.getElementById("masterDiv");
-// set the master div which contains all page elements to the full innerwidth and innerheight of window
-masterDiv.setAttribute("style", `width:${window.innerWidth}px`);
-masterDiv.setAttribute("style", `height:${window.innerHeight}px`);
-// retreive the dimensions of the master div for child Divs to refer to
-const mstrBbox = masterDiv.getBoundingClientRect();
+// ////////////////////
+// // MASTER DIV SETUP
+// // Get master div element and dimensions
+// const masterDiv = document.getElementById("masterDiv");
+// // set the master div which contains all page elements to the full innerwidth and innerheight of window
+// masterDiv.setAttribute("style", `width:${window.innerWidth}px`);
+// masterDiv.setAttribute("style", `height:${window.innerHeight}px`);
+// // retreive the dimensions of the master div for child Divs to refer to
+// const mstrBbox = masterDiv.getBoundingClientRect();
 
-////////////////////
-// BUTTON DIV SETUP
-// Get button div element and dimensions
-const buttonDiv = document.getElementById("button-div1");
-// sets the button Div element to one eighth the height of the master Div
-buttonDiv.setAttribute("style", `width:${mstrBbox.width}px`);
-buttonDiv.setAttribute("style", `height:${mstrBbox.height / 12}px`);
-// retreive the dimensions of the button div for reference
-const btnBbox = buttonDiv.getBoundingClientRect();
-// Get button 1
-const button1 = document.getElementById("button1");
+// ////////////////////
+// // BUTTON DIV SETUP
+// // Get button div element and dimensions
+// const buttonDiv = document.getElementById("button-div1");
+// // sets the button Div element to one eighth the height of the master Div
+// buttonDiv.setAttribute("style", `width:${mstrBbox.width}px`);
+// buttonDiv.setAttribute("style", `height:${mstrBbox.height / 12}px`);
+// // retreive the dimensions of the button div for reference
+// const btnBbox = buttonDiv.getBoundingClientRect();
+// // Get button 1
+// const button1 = document.getElementById("button1");
 
-/*assigns button 1 the function of clearing randomly defined rectangular areas of the canvas using the
-clearRandomQuadrant() function*/
-button1.addEventListener("click", () => {
-    clearRandomQuadrant();
-})
+// /*assigns button 1 the function of clearing randomly defined rectangular areas of the canvas using the
+// clearRandomQuadrant() function*/
+// button1.addEventListener("click", () => {
+//     clearRandomQuadrant();
+// })
 
 
 ////////////////////
@@ -37,11 +37,11 @@ const cnvelement = document.querySelector('.canvas')
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const ctx2 = canvas.getContext("2d");
-const cnvDiv = document.getElementById("canvasDiv");
-//set the canvas Div element to occupy the full available space remaining from the button Div
-cnvDiv.setAttribute("style", `width:${mstrBbox.width}px`);
-cnvDiv.setAttribute("style", `height:${mstrBbox.height - btnBbox.height}px`);
-const cnvBbox = cnvDiv.getBoundingClientRect();
+// const cnvDiv = document.getElementById("canvasDiv");
+// //set the canvas Div element to occupy the full available space remaining from the button Div
+// cnvDiv.setAttribute("style", `width:${mstrBbox.width}px`);
+// cnvDiv.setAttribute("style", `height:${mstrBbox.height - btnBbox.height}px`);
+// const cnvBbox = cnvDiv.getBoundingClientRect();
 
 
 //set initial canvas size
