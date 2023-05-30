@@ -94,6 +94,22 @@ class Line {
             }
         });
 
+        blackholes.forEach((blackhole) => {
+            let dxBlackhole = blackhole.centreX - this.x;
+            let dyBlackhole = blackhole.centreY - this.y;
+            let distanceBlackhole = Math.sqrt(dxBlackhole ** 2 + dyBlackhole ** 2);
+            if (distanceBlackhole < blackhole.radius*1.5) {
+                //console.log("event horizon")
+                let angleBH = Math.atan2(dyBlackhole, dxBlackhole);
+                let targetXBH = this.x + Math.cos(angleBH) * (blackhole.radius);
+                let targetYBH = this.y + Math.sin(angleBH) * (blackhole.radius);
+                let axBH = (targetXBH - blackhole.centreX) * 0.2;
+                let ayBH = (targetYBH - blackhole.centreY) * 0.2;
+                this.vx -= axBH;
+                this.vy -= ayBH;
+            }
+        });
+
         if (this.xyArr.length > ((this.depth * canvas.width) * (1 / this.lineWidth))) {
             this.dead = true;
             //console.log("a tone would be played");
@@ -133,7 +149,7 @@ class Line {
                 }
             }
         } else if (familySize > populationMax) { // if the population has been exceeded
-                        // children all spawn in the same direction
+            // children all spawn in the same direction
 
             let vxChild = random(-1, 1) / (1 + this.speed);
             let vyChild = random(-1, 1) / (1 + this.speed);
@@ -201,5 +217,44 @@ class Line {
         this.ctx.lineWidth = this.lineWidth * 1.5;
         this.ctx.stroke();
         ctx.drawImage(this.canvas, 0, 0);
+    }
+}
+
+class Blackhole {
+    constructor(x, y) {
+        this.centreX = x;
+        this.centreY = y;
+        this.arms = numRectangles
+        this.angle = angle;
+        this.initialSize = random(this.arms, this.arms * 3);
+        this.initialSize = 10;
+        this.maxDistance = this.initialSize * 20;
+        this.radius = this.maxDistance / this.arms;
+        this.canvas = offscreen;
+        this.ctx = layer;
+    }
+
+    draw() {
+        let gradientStops = ['blue', 'indigo', 'violet'];
+        for (let i = 1; i < this.arms; i++) {
+            let currentAngle = angle + (i * (2 * Math.PI / numRectangles));
+            let distance = (this.maxDistance / this.arms) * i / this.arms;
+            let x = this.centreX + Math.cos(currentAngle) * distance;
+            let y = this.centreY + Math.sin(currentAngle) * distance;
+            let size = this.initialSize - (i * (initialSize / numRectangles));
+            let gradient = ctx.createLinearGradient(x, y, x + size, y + size);
+            gradientStops.forEach((color, index) => {
+                gradient.addColorStop(index / (gradientStops.length - 1), color);
+            });
+
+            //ctx.fillStyle = gradient;
+            ctx.fillStyle = 'white';
+            ctx.fillRect(x, y, size, size);
+            //console.log([i],this.centreX,distance);
+        }
+    }
+
+    update() {
+        angle += 0.08;
     }
 }

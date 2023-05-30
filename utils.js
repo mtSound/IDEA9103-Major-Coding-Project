@@ -167,3 +167,24 @@ function initOrSeed() {
         seed(event);
     }
 }
+
+///////////pattern of background color changing ///////////////
+let backgroundColors = [
+    "#083691",
+    "#062d79",
+    "#052461",
+    "#041b49",
+    "#031230",
+    "#010918",
+    // "#093eaa",
+    "#000000"
+]
+let currentIndex = 0;
+
+setInterval(function () {
+    document.body.style.cssText = "background-color: " + backgroundColors[currentIndex];
+    currentIndex++;
+    if (currentIndex == undefined || currentIndex >= backgroundColors.length) {
+        currentIndex = 0;
+    }
+}, 1000);
