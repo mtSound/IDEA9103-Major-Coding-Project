@@ -151,7 +151,7 @@ let linesAvoid = true;
 //////////////////////////////////////////////////////////////////
 
 // Set the initial size, number and angle of new lines
-let numOfBlackholes = 1;
+let numOfBlackholes = 2;
 
 let initialSize = 20;
 
