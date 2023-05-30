@@ -135,7 +135,7 @@ document.addEventListener('click', initOrSeed);
 /// LINE BEHAVIOURS
 //////////////////////////////////////////////////////////////////
 
-let numOfLines = canvas.width / 64;// number of lines to start with - scaled to canvas
+let numOfLines = 10;// number of lines to start with - scaled to canvas
 
 let childScaling = 0.0001;//scaling for the speed of children (be gentle)
 
