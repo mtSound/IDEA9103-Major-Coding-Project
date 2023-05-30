@@ -9,7 +9,7 @@ class Line {
         this.speed = speed ?? childScaling;
         this.depth = depth ?? 3;
         this.color = colour ?? getRandomColour();
-        this.lineWidth = lineWidth ?? random(0.5, 3); // Random line width (1 to 4)
+        this.lineWidth = lineWidth ?? random(0.5, 6); // Random line width (1 to 4)
         this.prevX = x; // Previous x position
         this.prevY = y; // Previous y position
         this.canvas = offscreen;
@@ -71,20 +71,20 @@ class Line {
         // Check for collision with other lines & stop
         lines.forEach((line) => {
             if (line.familyID !== this.familyID) {
-                if (linesAvoid) {
-                    let dxLines = line.x - this.x;
-                    let dyLines = line.y - this.y;
-                    let distanceLines = Math.sqrt(dxLines ** 2 + dyLines ** 2);
-                    if (distanceLines < populationMax) {
-                        let angleLines = Math.atan2(dyLines, dxLines);
-                        let targetXLine = this.x + Math.cos(angleLines) * (populationMax / 8);
-                        let targetYLine = this.y + Math.sin(angleLines) * (populationMax / 8);
-                        let axLines = (targetXLine - line.x) * 0.02;
-                        let ayLines = (targetYLine - line.y) * 0.02;
-                        this.vx -= axLines;
-                        this.vy -= ayLines;
-                    }
-                }
+                // if (linesAvoid) {
+                //     let dxLines = line.x - this.x;
+                //     let dyLines = line.y - this.y;
+                //     let distanceLines = Math.sqrt(dxLines ** 2 + dyLines ** 2);
+                //     if (distanceLines < populationMax) {
+                //         let angleLines = Math.atan2(dyLines, dxLines);
+                //         let targetXLine = this.x + Math.cos(angleLines) * (populationMax / 8);
+                //         let targetYLine = this.y + Math.sin(angleLines) * (populationMax / 8);
+                //         let axLines = (targetXLine - line.x) * 0.02;
+                //         let ayLines = (targetYLine - line.y) * 0.02;
+                //         this.vx -= axLines;
+                //         this.vy -= ayLines;
+                //     }
+                // }
                 if (arrContainsObject(this.xy, line.xyArr)) {
                     this.collision = true;
                     this.collisionxy = this.xy;

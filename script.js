@@ -135,8 +135,7 @@ document.addEventListener('click', initOrSeed);
 /// LINE BEHAVIOURS
 //////////////////////////////////////////////////////////////////
 
-//let numOfLines = canvas.width / 32;// number of lines to start with - scaled to canvas
-let numOfLines = 20;
+let numOfLines = canvas.width / 64;// number of lines to start with - scaled to canvas
 
 let childScaling = 0.0001;//scaling for the speed of children (be gentle)
 
@@ -152,7 +151,7 @@ let linesAvoid = true;
 //////////////////////////////////////////////////////////////////
 
 // Set the initial size, number and angle of new lines
-let numOfBlackholes = 4;
+let numOfBlackholes = 3;
 
 let initialSize = 20;
 
