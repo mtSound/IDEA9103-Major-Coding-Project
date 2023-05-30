@@ -130,5 +130,5 @@ function rectClearArraySweep() {
 // MOUSE MOVEMENT FUNCTION
 function handleMouseMove(event) {
     mouseX = event.clientX;
-    mouseY = event.clientY - btnBbox.height;
+    mouseY = event.clientY - ctrlBbox.height;
 }
