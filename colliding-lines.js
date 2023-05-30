@@ -227,8 +227,7 @@ class Blackhole {
         this.arms = numRectangles
         this.angle = angle;
         this.initialSize = random(this.arms, this.arms * 3);
-        this.initialSize = 10;
-        this.maxDistance = this.initialSize * 20;
+        this.maxDistance = this.initialSize * random(20,50);
         this.radius = this.maxDistance / this.arms;
         this.canvas = offscreen;
         this.ctx = layer;
