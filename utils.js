@@ -6,7 +6,7 @@ const resolution = 3;
 function arrContainsObject(obj, arr) {
     for (let i = 0; i < arr.length; i++) {
         if ((arr[i].x >= (obj.x - resolution) && arr[i].x <= (obj.x + resolution)) && (arr[i].y >= (obj.y - resolution) && arr[i].y <= (obj.y + resolution))) {
-            collisionArray.push({ x: arr[i].x, y: arr[i].y });
+            //collisionArray.push({ x: arr[i].x, y: arr[i].y });
             // //once the array has multiple entries, draws a line from the first collision point to the most recent
             // if(collisionArray.length>=2){
             //   x1 = collisionArray[0].x;
@@ -27,7 +27,7 @@ function checkArr(array, key) {
         if (array[i].familyID === key) {
             array[i].familyCount += 1;
             found = true;
-        } 
+        }
     }
 
     if (!found) {
@@ -36,7 +36,14 @@ function checkArr(array, key) {
             familyCount: 1
         }
         array.push(newFamily);
-        //return newFamily;
+    }
+}
+
+function reduceArr(array, key) {
+    for (let i = 0; i < array.length; i++) {
+        if (array[i].familyID === key) {
+            array[i].familyCount -= 1;
+        }
     }
 }
 
@@ -45,13 +52,18 @@ function checkFamilySize(array, key) {
         if (array[i].familyID === key) {
             return array[i].familyCount;
         }
-        // } else {
-        //     return false;
-        // }
     }
 }
 
-//familyObject['familyCount']++;
+function removeFamily(array, key) {
+    for (let i = 0; i < array.length; i++) {
+        if (array[i].familyID === key) {
+            if (array[i].familyCount === 0) {
+                array.splice([i], 1);
+            }
+        }
+    }
+}
 
 //OVERLOADED RANDOM FUNCTION
 //random will return a value between 0 and 1 (not including 1)
@@ -79,14 +91,30 @@ function random() {
     }
 }
 
-// RANDOM COLOUR FUNCTION
+// OVERLOADED RANDOM COLOUR FUNCTION
+// you can pass in an argument to append opacity/transparency
 function getRandomColour() {
     const letters = "0123456789ABCDEF";
-    let color = "#";
-    for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
+    switch (arguments.length) {
+        case 0:
+            let color = "#";
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            //color += "10"
+            return color;
+        case 1: //add transparency
+            if (typeof arguments[0] == 'number') {
+                let color = "#";
+                for (let i = 0; i < 6; i++) {
+                    color += letters[Math.floor(Math.random() * 16)];
+
+                }
+                color += `${arguments[0]}`;
+                //console.log(arguments[0])
+                return color;
+            }
     }
-    return color;
 }
 
 //LINE DRAWING FUNCTION
@@ -130,8 +158,34 @@ function rectClearArraySweep() {
 // MOUSE MOVEMENT FUNCTION
 function handleMouseMove(event) {
     mouseX = event.clientX;
-    mouseY = event.clientY - btnBbox.height;
+    mouseY = event.clientY - ctrlBbox.height;
 }
 
+function initOrSeed() {
+    if (firstClick) {
+        initialize();
+    } else {
+        seed(event);
+    }
+}
 
-//test
+///////////pattern of background color changing ///////////////
+let backgroundColors = [
+    "#083691",
+    "#062d79",
+    "#052461",
+    "#041b49",
+    "#031230",
+    "#010918",
+    // "#093eaa",
+    "#000000"
+]
+let currentIndex = 0;
+
+setInterval(function () {
+    document.body.style.cssText = "background-color: " + backgroundColors[currentIndex];
+    currentIndex++;
+    if (currentIndex == undefined || currentIndex >= backgroundColors.length) {
+        currentIndex = 0;
+    }
+}, 1000);
