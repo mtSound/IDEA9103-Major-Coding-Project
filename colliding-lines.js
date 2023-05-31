@@ -12,8 +12,10 @@ class Line {
         this.lineWidth = lineWidth ?? random(0.5, 10); // Random line width (1 to 4)
         this.prevX = x; // Previous x position
         this.prevY = y; // Previous y position
-        this.canvas = offscreen;
-        this.ctx = layer;
+        // this.canvas = offscreen;
+        // this.ctx = layer;
+        this.canvas = new OffscreenCanvas(cnvBbox.width, cnvBbox.height);
+        this.ctx = this.canvas.getContext('2d');
         this.xyArr = []; // initialise an empty xyArr to store the line coordinates every time it calls the update method
         this.familyID = familyID ?? random(); // set a 'family ID' so lines from the same lineage can't collide with each other
         this.dead = false;
@@ -129,7 +131,6 @@ class Line {
         this.ctx.stroke();
         ctx.drawImage(this.canvas, 0, 0);
 
-
     }
 
     createChild() {
@@ -137,10 +138,10 @@ class Line {
 
         // apply some rules here for what this.color gets changed to after generation 1
         // will only validate to true the first time
-        if (this.depth === 3){
-            this.color;
-        }
-
+        // if (this.depth === 3){
+        //     this.color;
+        // }
+        
         if (this.depth === 3) { //if it's the first gen
             let children = random(0, 2);
             // children all spawn in the same direction
@@ -152,7 +153,7 @@ class Line {
                     let xy = this.xyArr[Math.floor(Math.random() * this.xyArr.length)];
                     // conditional to stop generating children if the distance between the the generation point and recent collision is too small
                     if ((Math.sqrt((xy.x - this.xy.x) ** 2 + (xy.y - this.xy.y) ** 2)) > 20) {
-                        let child = new Line(xy.x, xy.y, vxChild, vyChild, this.speed + this.speed, this.Color, this.lineWidth * 0.75, this.familyID, this.depth + 1);
+                        let child = new Line(xy.x, xy.y, vxChild, vyChild, this.speed + this.speed, this.color, this.lineWidth * 0.75, this.familyID, this.depth + 1);
                         lines.push(child);
                     }
                 }
@@ -167,7 +168,7 @@ class Line {
                 for (let i = 0; i < children; i++) {
                     let xy = this.xyArr[Math.floor(Math.random() * this.xyArr.length)];
                     if ((Math.sqrt((xy.x - this.xy.x) ** 2 + (xy.y - this.xy.y) ** 2)) > 20) {
-                        let child = new Line(xy.x, xy.y, vxChild, vyChild, this.speed / 4, this.Color, this.lineWidth, this.familyID, this.depth - 4);
+                        let child = new Line(xy.x, xy.y, vxChild, vyChild, this.speed / 4, this.color, this.lineWidth, this.familyID, this.depth - 4);
                         lines.push(child);
                     }
                 }
@@ -187,7 +188,7 @@ class Line {
 
                     // conditional to stop generating children if the distance between the the generation point and recent collision is too small
                     if ((Math.sqrt((xy.x - this.xy.x) ** 2 + (xy.y - this.xy.y) ** 2)) > 10) {
-                        let child = new Line(xy.x, xy.y, vxChild, vyChild, this.speed + this.speed, this.Color, this.lineWidth * 0.75, this.familyID, this.depth + 1);
+                        let child = new Line(xy.x, xy.y, vxChild, vyChild, this.speed + this.speed, this.color, this.lineWidth * 0.75, this.familyID, this.depth + 1);
                         lines.push(child);
                     }
                 }

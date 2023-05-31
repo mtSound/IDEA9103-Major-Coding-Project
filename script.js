@@ -38,7 +38,7 @@ playButton.addEventListener("click", (e) => {
 });
 /*assigns stopButton the function of stopping Tone.js audio*/
 stopButton.addEventListener("click", (e) => {
-    if(isPlaying){
+    if (isPlaying) {
         stopTone();
         isPlaying = false;
     }
@@ -56,7 +56,7 @@ const cnvDiv = document.getElementById("canvasDiv");
 //set the canvas Div element to occupy the full available space remaining from the controls div
 cnvDiv.setAttribute("style", `width:${mstrBbox.width}px`);
 cnvDiv.setAttribute("style", `height:${mstrBbox.height - ctrlBbox.height}px`);
-const cnvBbox = cnvDiv.getBoundingClientRect();
+let cnvBbox = cnvDiv.getBoundingClientRect();
 
 //set initial canvas size
 canvas.width = cnvBbox.width;
@@ -91,6 +91,8 @@ var galaxyColor = [
 // JOEL'S WINDOW RESIZING FUNCTION
 
 let offscreen, layer;//declare the offscreen canvas & context variables for use
+// let offscreen = new OffscreenCanvas(canvas.width, canvas.height);//make it the same size as the main canvas on the DOM
+// let layer = offscreen.getContext('2d');//another context
 
 let lastWindowResize;
 let shouldCanvasResize = false;//initialise as false
@@ -105,13 +107,21 @@ function windowResized() {
 function resizeDrawingCanvas() {
     offscreen = new OffscreenCanvas(canvas.width, canvas.height);//make it the same size as the main canvas on the DOM
     layer = offscreen.getContext('2d');//another context
+    // offscreen.width = canvas.width;
+    // offscreen.height = canvas.height;
 }
 
 
 function resizeMainCanvas() {
     //standard resizing of the main canvas
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    masterDiv.width = window.innerWidth;
+    masterDiv.height = window.innerHeight;
+    controlsDiv.width = mstrBbox.width;
+    controlsDiv.height = mstrBbox.height / 7;
+    cnvDiv.width = masterDiv.width
+    cnvDiv.height = masterDiv.height - controlsDiv.height;
+    canvas.width = cnvDiv.width;
+    canvas.height = cnvDiv.height;
 }
 
 //////////////////////////////////////////////////////////////////
@@ -190,11 +200,11 @@ let angle = 2;
 take note of both the min and max values set in the html here and the /100 division in the event listener
 for the slider her, which is normalising the output value to a range bewteen 0 and 1 with 100 steps of resolution.*/
 sldr1.addEventListener('input', (event) => {
-    sldr1Val = event.target.value/100; // value of the range slider
+    sldr1Val = event.target.value / 100; // value of the range slider
 })
 
 sldr2.addEventListener('input', (event) => {
-    sldr2Val = event.target.value/100; // value of the range slider
+    sldr2Val = event.target.value / 100; // value of the range slider
 })
 
 sldr3.addEventListener('input', (event) => {
@@ -202,13 +212,13 @@ sldr3.addEventListener('input', (event) => {
 })
 
 sldr4.addEventListener('input', (event) => {
-    sldr4Val = event.target.value/25; // value of the range slider
+    sldr4Val = event.target.value / 25; // value of the range slider
 })
 
 //tester rectangle tethered to slider 1
-function addFillRect(opacity){
+function addFillRect(opacity) {
     ctx.fillStyle = `rgba(255,255,255,${opacity})`;
-    ctx.fillRect(10,10,20,20);
+    ctx.fillRect(10, 10, 20, 20);
 }
 
 
