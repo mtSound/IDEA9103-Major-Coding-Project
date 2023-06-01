@@ -39,11 +39,9 @@ class Line {
         // Check for collision with the canvas borders
         if (this.x < 0 || this.x > canvas.width) {
             this.vx *= -1;
-            playTone();
         }
         if (this.y < 0 || this.y > canvas.height) {
             this.vy *= -1;
-            playTone();
         }
 
 
@@ -261,7 +259,8 @@ class Blackhole {
             });
 
             //ctx.fillStyle = gradient;
-            ctx.fillStyle = 'white';
+            // ctx.fillStyle = 'white';
+            ctx.fillStyle = 'rgba(255,255,255,0.2)';
             ctx.fillRect(x, y, size, size);
             //console.log([i],this.centreX,distance);
         }
