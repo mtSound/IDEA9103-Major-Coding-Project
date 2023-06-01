@@ -18,7 +18,7 @@ let mstrBbox = masterDiv.getBoundingClientRect();
 const controlsDiv = document.getElementById("controls-div1");
 // sets the controls div element to one eighth the height of the master Div
 controlsDiv.setAttribute("style", `width:${mstrBbox.width}px`);
-controlsDiv.setAttribute("style", `height:${mstrBbox.height / 7}px`);
+controlsDiv.setAttribute("style", `height:${mstrBbox.height / 9}px`);
 // retreive the dimensions of the controls div for reference
 let ctrlBbox = controlsDiv.getBoundingClientRect();
 // Get clrRectBtn for clearing sections of the main canvas
@@ -26,24 +26,11 @@ const clrRectBtn = document.getElementById("clrRectBtn");
 const playButton = document.getElementById("playButton");
 const stopButton = document.getElementById("stopButton");
 
-/*assigns clrRectBtn the function of clearing randomly defined rectangular areas of the canvas using the
-clearRandomQuadrant() function*/
+/*assigns clrRectBtn the function of enabling the canvas to be cleared via a sweeping bar from left to right, executed by a conditional
+waiting for canvasClearable to be set to 'true'*/
 clrRectBtn.addEventListener("click", async (e) => {
-    clearRandomQuadrant();
+    canvasClearable = true;
 });
-/*assigns playButton the function of starting Tone.js audio*/
-playButton.addEventListener("click", (e) => {
-    enableTone();
-    isPlaying = true;
-});
-/*assigns stopButton the function of stopping Tone.js audio*/
-stopButton.addEventListener("click", (e) => {
-    if (isPlaying) {
-        stopTone();
-        isPlaying = false;
-    }
-});
-
 
 
 ////////////////////
@@ -62,10 +49,24 @@ let cnvBbox = cnvDiv.getBoundingClientRect();
 canvas.width = cnvBbox.width;
 canvas.height = cnvBbox.height;
 
+let clearDimensions = 120;
+let canvasClearable = false;
+
+let clrSqrX = 0;
+let clrSqrY = 0;
+let clrSqrWidth = canvas.width/clearDimensions;
+let clrSqrHeight = canvas.height;
+
+function clearFullCanvas(){
+    ctx.clearRect(0,0,canvas.width,canvas.height)
+}
+
+
 let opts = {
     blurLevel: 0.5,
     fill: 'rgba(50, 20, 20, .05)',
 };
+
 
 //////////////////////////////////////////////////////////////////
 /// ColorPattern set up
@@ -143,16 +144,10 @@ let isPlaying = false;
 
 //retrieves sliders and assigns to variables
 let sldr1 = document.getElementById("sldr1");
-let sldr2 = document.getElementById("sldr2");
-let sldr3 = document.getElementById("sldr3");
-let sldr4 = document.getElementById("sldr4");
 
 /* establishes variables for slider values to which are given dynamic updates by below event listeners. Initialised to specific
 values which are overtaken by user input once sliders are moved */
 let sldr1Val = 0.3;
-let sldr2Val = 0.2;
-let sldr3Val = 400;
-let sldr4Val = 0.3;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -180,7 +175,7 @@ let linesAvoid = true;
 //////////////////////////////////////////////////////////////////
 
 // Set the initial size, number and angle of new lines
-let numOfBlackholes = 2;
+let numOfBlackholes = 1;
 
 let initialSize = 20;
 
@@ -199,26 +194,14 @@ let angle = 2;
 /* slider 1 presently unassigned so this can be used for testing out as an interactive control in the code if you wish
 take note of both the min and max values set in the html here and the /100 division in the event listener
 for the slider her, which is normalising the output value to a range bewteen 0 and 1 with 100 steps of resolution.*/
-sldr1.addEventListener('input', (event) => {
-    sldr1Val = event.target.value / 100; // value of the range slider
-})
-
-sldr2.addEventListener('input', (event) => {
-    sldr2Val = event.target.value / 100; // value of the range slider
-})
-
-sldr3.addEventListener('input', (event) => {
-    sldr3Val = event.target.value; // value of the range slider
-})
-
-sldr4.addEventListener('input', (event) => {
-    sldr4Val = event.target.value / 25; // value of the range slider
-})
+// sldr1.addEventListener('input', (event) => {
+//     sldr1Val = event.target.value / 100; // value of the range slider
+// })
 
 //tester rectangle tethered to slider 1
 function addFillRect(opacity) {
     ctx.fillStyle = `rgba(255,255,255,${opacity})`;
-    ctx.fillRect(10, 10, 20, 20);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
 
@@ -253,8 +236,7 @@ function seed(event) {
 
 // Update function
 function update() {
-    resizeMainCanvas();
-    resizeDrawingCanvas();
+
     if (shouldCanvasResize) {
         resizeMainCanvas();//this is important, we only resize the main canvas at the beginning of a draw loop. 
         //This way we don't get any canvas blanking.
@@ -267,11 +249,9 @@ function update() {
         }
     }
 
-    // Hue rotate filter
-    //ctx.filter = `hue-rotate(${hueRotate}deg) blur(0.3px)`;
     ctx.fillStyle = opts.fill;
     ctx.globalAlpha = opts.blurLevel;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);  
     lines.forEach((line, index) => {
         if (!line.dead) {
             if (!line.collision) {
@@ -290,13 +270,26 @@ function update() {
         blackhole.update();
         blackhole.draw();
     });
-    // enbales shift of hue for multicolour effects
-    // hueRotate++;
+
 
     // //tester small rectangle with slider1 tethered to opacity
     // addFillRect(sldr1Val);
     requestAnimationFrame(update);
     addEventListener("resize", windowResized);
+
+    if(canvasClearable){
+        if (clrSqrX<canvas.width){
+            ctx.clearRect(clrSqrX, clrSqrY, clrSqrWidth, clrSqrHeight)
+            ctx2.clearRect(clrSqrX, clrSqrY, clrSqrWidth, clrSqrHeight)
+            clrSqrX+=clrSqrWidth;
+        }
+        else{
+            canvasClearable=false
+            clrSqrX = 0;
+            isPlaying = true;
+        }
+    }
+
 }
 
 
@@ -323,4 +316,5 @@ document.addEventListener('click', (e) => {
     //initialize();
     //selects a new scale randomly on each user click
     changeScaleSelection();
+    playTone();
 });
