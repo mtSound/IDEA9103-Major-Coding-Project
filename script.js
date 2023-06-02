@@ -332,12 +332,13 @@ document.addEventListener('click', (e) => {
             ctx.fillStyle = "white"
             let userMsg = "Click to generate agents"
             let textWidth = ctx.measureText(userMsg).width;
-            
             ctx.fillText("Click to generate agents", (canvas.width/2) - (textWidth / 2), canvas.height / 2);
         }, 3100);
     }
     else {
-        ctx.clearRect(0,0,canvas.width,canvas.height);
+        if (firstClick){
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+        }
         initOrSeed();
         changeScaleSelection();
         playTone();
