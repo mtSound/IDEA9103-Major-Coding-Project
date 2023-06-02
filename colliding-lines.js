@@ -1,42 +1,42 @@
+// An empty array to store the 'families' of lines
 let lineFamilies = [];
-// Line class
+
+// Line class - our agent
 class Line {
     constructor(x, y, vx, vy, speed, colour, lineWidth, familyID, depth) {
         this.x = x;
         this.y = y;
         this.vx = vx ?? random(-1, 1); // Random velocity for x-axis (-1 to 1)
         this.vy = vy ?? random(-1, 1); // Random velocity for y-axis (-1 to 1)
-        this.speed = speed ?? childScaling;
-        this.depth = depth ?? 3;
-        this.color = colour ?? getRandomColour();
-        this.lineWidth = lineWidth ?? random(0.5, 10); // Random line width (1 to 4)
+        this.speed = speed ?? childScaling; // inherits speed from parent, or takes on the initilisation in script.js
+        this.depth = depth ?? 3; // increments on each generation, used to scale number of children
+        this.color = colour ?? getRandomColour(); // inherits from parent
+        this.lineWidth = lineWidth ?? random(0.5, 10); // Inherits from parent, or random line width (1 to 4) on 1st gen
         this.prevX = x; // Previous x position
         this.prevY = y; // Previous y position
-        // this.canvas = offscreen;
-        // this.ctx = layer;
         this.canvas = new OffscreenCanvas(cnvBbox.width, cnvBbox.height);
         this.ctx = this.canvas.getContext('2d');
         this.xyArr = []; // initialise an empty xyArr to store the line coordinates every time it calls the update method
         this.familyID = familyID ?? random(); // set a 'family ID' so lines from the same lineage can't collide with each other
-        this.dead = false;
-        this.deathComplete = false;
-        this.deadX;
-        this.deadY;
-        this.prevDeadX;
-        this.prevDeadY;
+        this.dead = false; // start as alive
+        this.deathComplete = false; // start as alive
+        this.deadX; // empty until unDraw() and unUpdate() are called
+        this.deadY; // empty until unDraw() and unUpdate() are called
+        this.prevDeadX; // empty until unDraw() and unUpdate() are called
+        this.prevDeadY; // empty until unDraw() and unUpdate() are called
 
         //check the familyID - if it exists, add to the familyCount. Otherwise, create a new family
         checkArr(lineFamilies, this.familyID);
     }
 
     update() {
-
+        // update coordinates to draw the line
         this.prevX = this.x;
         this.prevY = this.y;
         this.x += this.vx;
         this.y += this.vy;
 
-        // Check for collision with the canvas borders
+        // Check for collision with the canvas borders and alter velocity
         if (this.x < 0 || this.x > canvas.width) {
             this.vx *= -1;
         }
@@ -63,17 +63,17 @@ class Line {
             }
         }
 
-
+        // store the current coordinates in a local array
         this.xy = {
             x: this.x,
             y: this.y,
         };
         this.xyArr.push(this.xy);
 
-        // Check for collision with other lines & stop
+        // Check for collision with other lines & stop, but not if they're part of the same family
         lines.forEach((line) => {
             if (line.familyID !== this.familyID) {
-                if (linesAvoid) {
+                if (linesAvoid) { // avoid other lines, can be turned off in script.js
                     let dxLines = line.x - this.x;
                     let dyLines = line.y - this.y;
                     let distanceLines = Math.sqrt(dxLines ** 2 + dyLines ** 2);
@@ -90,18 +90,18 @@ class Line {
                 if (arrContainsObject(this.xy, line.xyArr)) {
                     this.collision = true;
                     this.collisionxy = this.xy;
-                    this.createChild();
-                    this.dead = true;
+                    this.createChild(); // create a child on collision
+                    this.dead = true; // start the death process
                 }
             }
         });
 
+        // a simple attractor method for the blackholes
         blackholes.forEach((blackhole) => {
             let dxBlackhole = blackhole.centreX - this.x;
             let dyBlackhole = blackhole.centreY - this.y;
             let distanceBlackhole = Math.sqrt(dxBlackhole ** 2 + dyBlackhole ** 2);
             if (distanceBlackhole < blackhole.radius*1.5) {
-                //console.log("event horizon")
                 let angleBH = Math.atan2(dyBlackhole, dxBlackhole);
                 let targetXBH = this.x + Math.cos(angleBH) * (blackhole.radius);
                 let targetYBH = this.y + Math.sin(angleBH) * (blackhole.radius);
@@ -112,9 +112,9 @@ class Line {
             }
         });
 
+        // if the line is too long, kill it
         if (this.xyArr.length > ((this.depth * canvas.width) * (1 / this.lineWidth))) {
             this.dead = true;
-            //console.log("a tone would be played");
         }
     }
 
@@ -128,17 +128,10 @@ class Line {
         this.ctx.lineWidth = this.lineWidth;
         this.ctx.stroke();
         ctx.drawImage(this.canvas, 0, 0);
-
     }
 
     createChild() {
         let familySize = checkFamilySize(lineFamilies, this.familyID);
-
-        // apply some rules here for what this.color gets changed to after generation 1
-        // will only validate to true the first time
-        // if (this.depth === 3){
-        //     this.color;
-        // }
         
         if (this.depth === 3) { //if it's the first gen
             let children = random(0, 2);
@@ -158,7 +151,6 @@ class Line {
             }
         } else if (familySize > populationMax) { // if the population has been exceeded
             // children all spawn in the same direction
-            
             let vxChild = random(-1, 1) / (1 + this.speed);
             let vyChild = random(-1, 1) / (1 + this.speed);
             let children = random(0, 1);
@@ -176,14 +168,10 @@ class Line {
             // children all spawn in the same direction
             let vxChild = random(-1, 1) * (1 + this.speed);
             let vyChild = random(-1, 1) * (1 + this.speed);
-
-
-
             if (!this.dead) {
                 for (let i = 0; i < children; i++) {
                     // pick a random point along the parent line to spawn child from
                     let xy = this.xyArr[Math.floor(Math.random() * this.xyArr.length)];
-
                     // conditional to stop generating children if the distance between the the generation point and recent collision is too small
                     if ((Math.sqrt((xy.x - this.xy.x) ** 2 + (xy.y - this.xy.y) ** 2)) > 10) {
                         let child = new Line(xy.x, xy.y, vxChild, vyChild, this.speed + this.speed, this.color, this.lineWidth * 0.75, this.familyID, this.depth + 1);
@@ -195,25 +183,21 @@ class Line {
     }
 
     unUpdate() {
-        if (this.xyArr.length > 1) {
+        if (this.xyArr.length > 1) { // as long as the array of coordinates is not empty, continue to 'unUpdate' the line
             let deadXY = this.xyArr[this.xyArr.length - 1];
             let nextDeadXY = this.xyArr[this.xyArr.length - 2];
             this.prevDeadX = deadXY.x;
             this.prevDeadY = deadXY.y;
             this.deadX = nextDeadXY.x;
             this.deadY = nextDeadXY.y;
-            this.xyArr.pop();
+            this.xyArr.pop(); // remove the coordinates from the local xyArr once done
         } else {
-            this.xyArr = [];
+            this.xyArr = []; // clear the array
             this.deathComplete = true;
-            // playTone();//this location also works pretty well for audio triggering if the initialisation loop is approx 5.
-            reduceArr(lineFamilies, this.familyID);
-
+            reduceArr(lineFamilies, this.familyID); // reduce the family count once dead
             let familySize = checkFamilySize(lineFamilies, this.familyID);
-            if (familySize < 1) {
-                console.log("a sound could be played");
+            if (familySize < 1) { // the death of the whole famnily
                 removeFamily(lineFamilies, this.familyID)
-
             }
 
         }
@@ -232,6 +216,7 @@ class Line {
     }
 }
 
+// Blackhole class
 class Blackhole {
     constructor(x, y) {
         this.centreX = x;
@@ -257,12 +242,8 @@ class Blackhole {
             gradientStops.forEach((color, index) => {
                 gradient.addColorStop(index / (gradientStops.length - 1), color);
             });
-
-            //ctx.fillStyle = gradient;
-            // ctx.fillStyle = 'white';
             ctx.fillStyle = 'rgba(255,255,255,0.2)';
             ctx.fillRect(x, y, size, size);
-            //console.log([i],this.centreX,distance);
         }
     }
 

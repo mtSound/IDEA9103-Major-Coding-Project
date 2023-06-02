@@ -4,7 +4,7 @@
 
 // Create a gain nodes to tame signal before output, avoiding digital distortion.
 const gainNode = new Tone.Gain(0.3).toDestination();
-const gainNode2 = new Tone.Gain(0.15).toDestination();
+const gainNode2 = new Tone.Gain(0.1).toDestination();
 const gainNode3 = new Tone.Gain(0.2).toDestination();
 
 // //////////////////////////////////////////////////////////////////
