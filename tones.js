@@ -12,9 +12,9 @@ const gainNode3 = new Tone.Gain(0.2).toDestination();
 // //////////////////////////////////////////////////////////////////
 
 const chorus = new Tone.Chorus(4, 2.5, 0.5).connect(gainNode)
-const pingPong = new Tone.PingPongDelay("8n", 0.8).connect(gainNode3);
+const pingPong = new Tone.PingPongDelay("8n", 0.8).connect(gainNode2);
 const reverb = new Tone.Reverb(15).connect(gainNode3);
-const reverb2 = new Tone.Reverb(5).connect(gainNode3);
+const reverb2 = new Tone.Reverb(5).connect(gainNode2);
 const filter1 = new Tone.Filter(1000, 'bandpass').connect(gainNode2);
 const autoFilter = new Tone.AutoFilter("2n").connect(gainNode3);
 const feedbackDelay = new Tone.FeedbackDelay("2n", 0.8).connect(gainNode3);
