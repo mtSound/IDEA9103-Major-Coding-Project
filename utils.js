@@ -204,4 +204,6 @@ function updateDimensions() {
     cnvBbox = cnvDiv.getBoundingClientRect();
     canvas.width = cnvBbox.width;
     canvas.height = cnvBbox.height;
+    clrSqrWidth = canvas.width / clearDimensions;
+    clrSqrHeight = canvas.height;
 }
