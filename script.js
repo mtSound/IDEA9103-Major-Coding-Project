@@ -2,10 +2,15 @@
 /// PAGE SETUP
 //////////////////////////////////////////////////////////////////
 
+// pade load and abstract elements
+const fader = document.getElementById('fader');
+const pageLoadDiv = document.getElementById("pageload");
+const abstract = document.getElementById('abstract');
+
 ////////////////////
 // MASTER DIV SETUP
 // Get master div element and dimensions
-const masterDiv = document.getElementById("masterDiv");
+let masterDiv = document.getElementById("masterDiv");
 // set the master div which contains all page elements to the full innerwidth and innerheight of window
 masterDiv.setAttribute("style", `width:${window.innerWidth}px`);
 masterDiv.setAttribute("style", `height:${window.innerHeight}px`);
@@ -15,10 +20,10 @@ let mstrBbox = masterDiv.getBoundingClientRect();
 ////////////////////
 // CONTROLS DIV SETUP
 // Get controls div element and dimensions
-const controlsDiv = document.getElementById("controls-div1");
+let controlsDiv = document.getElementById("controls-div1");
 // sets the controls div element to one eighth the height of the master Div
 controlsDiv.setAttribute("style", `width:${mstrBbox.width}px`);
-controlsDiv.setAttribute("style", `height:${mstrBbox.height / 9}px`);
+controlsDiv.setAttribute("style", `height:${mstrBbox.height / 15}px`);
 // retreive the dimensions of the controls div for reference
 let ctrlBbox = controlsDiv.getBoundingClientRect();
 // Get clrRectBtn for clearing sections of the main canvas
@@ -32,14 +37,17 @@ clrRectBtn.addEventListener("click", async (e) => {
     canvasClearable = true;
 });
 
+masterDiv.style.display = "none";
+let pageLoad = true;
+
 
 ////////////////////
 // CANVAS SETUP
-const cnvelement = document.querySelector('.canvas')
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
-const ctx2 = canvas.getContext("2d");
-const cnvDiv = document.getElementById("canvasDiv");
+let cnvelement = document.querySelector('.canvas')
+let canvas = document.getElementById("canvas");
+let ctx = canvas.getContext("2d");
+let ctx2 = canvas.getContext("2d");
+let cnvDiv = document.getElementById("canvasDiv");
 //set the canvas Div element to occupy the full available space remaining from the controls div
 cnvDiv.setAttribute("style", `width:${mstrBbox.width}px`);
 cnvDiv.setAttribute("style", `height:${mstrBbox.height - ctrlBbox.height}px`);
@@ -54,11 +62,11 @@ let canvasClearable = false;
 
 let clrSqrX = 0;
 let clrSqrY = 0;
-let clrSqrWidth = canvas.width/clearDimensions;
+let clrSqrWidth = canvas.width / clearDimensions;
 let clrSqrHeight = canvas.height;
 
-function clearFullCanvas(){
-    ctx.clearRect(0,0,canvas.width,canvas.height)
+function clearFullCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
 }
 
 
@@ -92,8 +100,6 @@ var galaxyColor = [
 // JOEL'S WINDOW RESIZING FUNCTION
 
 let offscreen, layer;//declare the offscreen canvas & context variables for use
-// let offscreen = new OffscreenCanvas(canvas.width, canvas.height);//make it the same size as the main canvas on the DOM
-// let layer = offscreen.getContext('2d');//another context
 
 let lastWindowResize;
 let shouldCanvasResize = false;//initialise as false
@@ -108,8 +114,6 @@ function windowResized() {
 function resizeDrawingCanvas() {
     offscreen = new OffscreenCanvas(canvas.width, canvas.height);//make it the same size as the main canvas on the DOM
     layer = offscreen.getContext('2d');//another context
-    // offscreen.width = canvas.width;
-    // offscreen.height = canvas.height;
 }
 
 
@@ -117,12 +121,17 @@ function resizeMainCanvas() {
     //standard resizing of the main canvas
     masterDiv.width = window.innerWidth;
     masterDiv.height = window.innerHeight;
+    mstrBbox = masterDiv.getBoundingClientRect();
     controlsDiv.width = mstrBbox.width;
-    controlsDiv.height = mstrBbox.height / 7;
-    cnvDiv.width = masterDiv.width
-    cnvDiv.height = masterDiv.height - controlsDiv.height;
-    canvas.width = cnvDiv.width;
-    canvas.height = cnvDiv.height;
+    controlsDiv.height = mstrBbox.height / 15;
+    ctrlBbox = controlsDiv.getBoundingClientRect();
+    cnvDiv.width = mstrBbox.width;
+    cnvDiv.height =mstrBbox.height - ctrlBbox.height;
+    cnvBbox = cnvDiv.getBoundingClientRect();
+    canvas.width = cnvBbox.width;
+    canvas.height = cnvBbox.height;
+    clrSqrWidth = canvas.width / clearDimensions;
+    clrSqrHeight = canvas.height;
 }
 
 //////////////////////////////////////////////////////////////////
@@ -159,7 +168,7 @@ let sldr1Val = 0.3;
 //////////////////////////////////////////////////////////////////
 
 // limit this to around 5
-let numOfLines = 5;// number of lines to start with - scaled to canvas
+let numOfLines = 7;// number of lines to start with - scaled to canvas
 
 let childScaling = 0.0001;//scaling for the speed of children (be gentle)
 
@@ -238,20 +247,20 @@ function seed(event) {
 function update() {
 
     if (shouldCanvasResize) {
-        resizeMainCanvas();//this is important, we only resize the main canvas at the beginning of a draw loop. 
-        //This way we don't get any canvas blanking.
+        resizeMainCanvas();
 
         let now = new Date();
         if (now - lastWindowResize >= 1000) {
             //at least 1000ms since last resize
             resizeDrawingCanvas();
+            //resizeMainCanvas();
             shouldCanvasResize = false;
         }
     }
 
     ctx.fillStyle = opts.fill;
     ctx.globalAlpha = opts.blurLevel;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);  
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     lines.forEach((line, index) => {
         if (!line.dead) {
             if (!line.collision) {
@@ -277,14 +286,14 @@ function update() {
     requestAnimationFrame(update);
     addEventListener("resize", windowResized);
 
-    if(canvasClearable){
-        if (clrSqrX<canvas.width){
+    if (canvasClearable) {
+        if (clrSqrX < canvas.width) {
             ctx.clearRect(clrSqrX, clrSqrY, clrSqrWidth, clrSqrHeight)
             ctx2.clearRect(clrSqrX, clrSqrY, clrSqrWidth, clrSqrHeight)
-            clrSqrX+=clrSqrWidth;
+            clrSqrX += clrSqrWidth;
         }
-        else{
-            canvasClearable=false
+        else {
+            canvasClearable = false
             clrSqrX = 0;
             isPlaying = true;
         }
@@ -292,8 +301,9 @@ function update() {
 
 }
 
+fadeInAbstract();
 
-// Initialize and start the animation
+// Initialize the animation
 update();
 
 
@@ -304,17 +314,26 @@ update();
 // Event listeners
 window.addEventListener("mousemove", handleMouseMove);
 
-// // event listener for clicking anywhere on the page
-// document.addEventListener('click', initOrSeed);
-
 // Event listeners
 window.addEventListener("mousemove", handleMouseMove);
-// event listener for clicking anywhere on the page
 
 document.addEventListener('click', (e) => {
-    initOrSeed();
-    //initialize();
-    //selects a new scale randomly on each user click
-    changeScaleSelection();
-    playTone();
+    if (pageLoad === true) {
+        fadeOutAbstract();
+        setTimeout(() => {
+            pageLoadDiv.style.display = "none";
+            masterDiv.style.display = "block";
+            fader.style.opacity = 0;
+             fader.style.display = "none";
+            fadeInCanvas();
+            updateDimensions();
+            pageLoad = false;
+        }, 3100);
+    }
+    else {
+        initOrSeed();
+        changeScaleSelection();
+        playTone();
+    }
+
 });

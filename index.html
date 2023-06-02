@@ -1,46 +1,64 @@
 <!DOCTYPE html>
 <html>
-  <html lang="en">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IDEA9103: Major Coding Project</title>
-    <link rel="stylesheet" href="style.css" />
-    <!-- tone.js link -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"
-        integrity="sha512-jduERlz7En1IUZR54bqzpNI64AbffZWR//KJgF71SJ8D8/liKFZ+s1RxmUmB+bhCnIfzebdZsULwOrbVB5f3nQ=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>cosmic colliderScope</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- tone.js link -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"
+    integrity="sha512-jduERlz7En1IUZR54bqzpNI64AbffZWR//KJgF71SJ8D8/liKFZ+s1RxmUmB+bhCnIfzebdZsULwOrbVB5f3nQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-    <script src="utils.js"></script>
-    <script src="colliding-lines.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&display=swap" rel="stylesheet">
+
+  <script src="utils.js"></script>
+  <script src="colliding-lines.js"></script>
 </head>
 
 <body>
-  <!--a master div holds everything and the canvas and button each have their own div within for managing layout
-  and responsiveness -->
-  <div id="masterDiv">
+  <svg id="fader"></svg>
 
-    <div id="controls-div1">
+  <div id="pageload">
+    <div id="abstract">
+      <h1>
+        <b>c</b>osmic collider<b>S</b>cope
+      </h1>
+      <p>
+        '<i>cosmic colliderScope</i>' is a generative code artwork exploring the emergent properties of agent based
+        systems.<br>
+        From simple rule sets running over many iterations, complex structures and ecosystems of 'agents' are
+        seen
+        to<br>
+        move through space, colliding, dying and giving birth to replica versions of themselves.<br>
+      </p>
+      <br>
+      <p>
+        You can click to generate agents, and move your mouse to interact with them.
+      </p>
 
-<!-- 
-      <input type="range" id="sldr1" name="slider1" value="1" min="0" max="100">
-      <label id="slider1Label" for="slider1">Slider 1 unnasigned</label> -->
-      <!-- presently unassigned so this can be used for testing out as a control in the code if you wish
-      take note of the min and max values set in the html here and the /100 division in the event listener
-      for this slider in script.js, which is normalising the value to a range bewteen 0 and 1 with 100 steps of resolution. -->        
-      
-      <div id="buttonDiv">
-        <button id="clrRectBtn">CLEAR DEAD LINES</button>
-      </div>
-
+      <br>
+      <br>
+      <br>
+      <p>
+        Click anywhere to begin.
+      </p>
     </div>
-  
+  </div>
+  <div id="masterDiv">
+    <div id="controls-div1">
+      <div id="buttonDiv">
+        <button class="btn" id="clrRectBtn">CLEAR DEAD LINES</button>
+      </div>
+    </div>
     <div id="canvasDiv">
       <canvas id="canvas"></canvas>
     </div>
-
   </div>
 
   <script src="tones.js"></script>
