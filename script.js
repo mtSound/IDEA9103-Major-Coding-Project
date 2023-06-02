@@ -126,7 +126,7 @@ function resizeMainCanvas() {
     controlsDiv.height = mstrBbox.height / 15;
     ctrlBbox = controlsDiv.getBoundingClientRect();
     cnvDiv.width = mstrBbox.width;
-    cnvDiv.height =mstrBbox.height - ctrlBbox.height;
+    cnvDiv.height = mstrBbox.height - ctrlBbox.height;
     cnvBbox = cnvDiv.getBoundingClientRect();
     canvas.width = cnvBbox.width;
     canvas.height = cnvBbox.height;
@@ -324,13 +324,20 @@ document.addEventListener('click', (e) => {
             pageLoadDiv.style.display = "none";
             masterDiv.style.display = "block";
             fader.style.opacity = 0;
-             fader.style.display = "none";
+            fader.style.display = "none";
             fadeInCanvas();
             updateDimensions();
             pageLoad = false;
+            ctx.font = "20px Comfortaa";
+            ctx.fillStyle = "white"
+            let userMsg = "Click to generate agents"
+            let textWidth = ctx.measureText(userMsg).width;
+            
+            ctx.fillText("Click to generate agents", (canvas.width/2) - (textWidth / 2), canvas.height / 2);
         }, 3100);
     }
     else {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
         initOrSeed();
         changeScaleSelection();
         playTone();
