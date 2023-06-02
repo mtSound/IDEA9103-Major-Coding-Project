@@ -168,7 +168,7 @@ let sldr1Val = 0.3;
 //////////////////////////////////////////////////////////////////
 
 // limit this to around 5
-let numOfLines = 5;// number of lines to start with - scaled to canvas
+let numOfLines = 7;// number of lines to start with - scaled to canvas
 
 let childScaling = 0.0001;//scaling for the speed of children (be gentle)
 
